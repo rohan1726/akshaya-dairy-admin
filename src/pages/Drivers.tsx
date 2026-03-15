@@ -169,14 +169,14 @@ const Drivers = () => {
     e.preventDefault();
     if (!selectedDriver) return;
     try {
-      const updateData = { ...formData };
+      const updateData: Record<string, unknown> = { ...formData };
       if (!updateData.password) {
         delete updateData.password;
       }
       await axios.put(`/driver-admin/${selectedDriver.id}`, {
         ...updateData,
-        salary_per_month: updateData.salary_per_month ? parseFloat(updateData.salary_per_month) : undefined,
-      });
+        salary_per_month: updateData.salary_per_month ? parseFloat(String(updateData.salary_per_month)) : undefined,
+      } as Record<string, unknown>);
       toast.success('Driver updated successfully!');
       setShowEditModal(false);
       resetForm();
@@ -329,7 +329,7 @@ const Drivers = () => {
                     >
                       {driver.centers_count || 0} {driver.centers_count === 1 ? 'Center' : 'Centers'}
                     </Badge>
-                    {driver.centers_count > 0 && (
+                    {(driver.centers_count ?? 0) > 0 && (
                       <small className="d-block text-muted mt-1">
                         {driver.center_number || driver.center_name || 'Unassigned'}
                       </small>

@@ -30,7 +30,7 @@ interface MilkCollection {
   total_amount: number;
   status: string;
   vendor_name?: string;
-  // vendor_id?: string; // Commented out - using center_id only
+  vendor_id?: string;
   driver_name?: string;
   center_id?: string;
   center_name?: string;
@@ -41,9 +41,23 @@ interface MilkCollection {
   comments?: string;
 }
 
+/** Grouped row shown in table: one per center/date/time with cow and buffalo entries */
+interface GroupedCollection {
+  id: string;
+  center_name?: string;
+  center_id?: string;
+  collection_date: string;
+  collection_time: string;
+  status: string;
+  cow: MilkCollection | null;
+  buffalo: MilkCollection | null;
+  quality_notes?: string;
+  comments?: string;
+}
+
 const MilkCollections = () => {
-  const [collections, setCollections] = useState<MilkCollection[]>([]);
-  const [allCollections, setAllCollections] = useState<MilkCollection[]>([]);
+  const [collections, setCollections] = useState<GroupedCollection[]>([]);
+  const [allCollections, setAllCollections] = useState<GroupedCollection[]>([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
     start_date: '',
@@ -60,7 +74,7 @@ const MilkCollections = () => {
   const [editGroup, setEditGroup] = useState<any>(null);
   const [editData, setEditData] = useState<any>({ cow: {}, buffalo: {} });
   const [showViewModal, setShowViewModal] = useState(false);
-  const [viewCollection, setViewCollection] = useState<MilkCollection | null>(null);
+  const [viewCollection, setViewCollection] = useState<GroupedCollection | null>(null);
 
   useEffect(() => {
     fetchCenters();
@@ -138,8 +152,8 @@ const MilkCollections = () => {
   };
 
   // Group collections by center_id, date, time - showing cow first, then buffalo
-  const groupCollectionsByCenterDateTime = (data: MilkCollection[], centersList: any[] = centers) => {
-    const grouped = new Map<string, any>();
+  const groupCollectionsByCenterDateTime = (data: MilkCollection[], centersList: any[] = centers): GroupedCollection[] => {
+    const grouped = new Map<string, GroupedCollection>();
     
     if (!data || data.length === 0) {
       return [];
@@ -183,7 +197,7 @@ const MilkCollections = () => {
         });
       }
       
-      const group = grouped.get(key);
+      const group = grouped.get(key)!;
       // Separate cow and buffalo milk within the same group
       if (collection.milk_type === 'cow') {
         group.cow = {
@@ -213,7 +227,7 @@ const MilkCollections = () => {
     groupedArray.sort((a, b) => {
       // First sort by center name
       if (a.center_name !== b.center_name) {
-        return a.center_name.localeCompare(b.center_name);
+        return (a.center_name || '').localeCompare(b.center_name || '');
       }
       // Then by date (newest first)
       const dateA = new Date(a.collection_date);
@@ -257,7 +271,7 @@ const MilkCollections = () => {
       return; // Don't update if negative
     }
     
-    setEditData(prev => ({
+    setEditData((prev: { cow: Record<string, string>; buffalo: Record<string, string> }) => ({
       ...prev,
       [milkType]: {
         ...prev[milkType],

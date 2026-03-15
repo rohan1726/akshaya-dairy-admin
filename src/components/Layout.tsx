@@ -6,9 +6,7 @@ import {
   FiTruck, 
   FiUsers, 
   FiDroplet, 
-  FiDollarSign, 
   FiLogOut, 
-  FiTrendingUp, 
   FiMenu, 
   FiX, 
   FiUser, 
@@ -124,7 +122,7 @@ const Layout = () => {
                 <div className="fw-bold" style={{ color: '#1E2329' }}>
                   {user?.first_name} {user?.last_name}
                 </div>
-                <div className="small text-muted">{user?.email || user?.mobile}</div>
+                <div className="small text-muted">{user?.email || user?.mobile_no}</div>
               </div>
               <div className="py-2">
                 <button

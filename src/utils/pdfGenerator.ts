@@ -152,7 +152,7 @@ export const generateDriverPaymentPDF = (data: {
   yPos += 10;
   
   doc.setFontSize(12);
-  doc.setFont(undefined, 'bold');
+  doc.setFont('helvetica', 'bold');
   doc.text(`Final Amount: ₹${data.finalAmount.toFixed(2)}`, 14, yPos);
   
   const fileName = data.paymentCode ? 
@@ -200,7 +200,7 @@ export const generateCenterPaymentPDF = (data: {
   yPos += 10;
   
   doc.setFontSize(12);
-  doc.setFont(undefined, 'bold');
+  doc.setFont('helvetica', 'bold');
   doc.text(`Final Amount: ₹${data.finalAmount.toFixed(2)}`, 14, yPos);
   
   // Collections table if provided
